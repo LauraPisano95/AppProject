@@ -16,10 +16,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import io.vov.vitamio.MediaPlayer;
+
+import static io.vov.vitamio.utils.Log.TAG;
 
 /**
 
@@ -38,7 +41,9 @@ public class PhotoSaver {
     String imgname;
     private byte[][] array= new byte[24][];
     private static int i=0;
-    public PhotoSaver(Context c, MediaPlayer m){
+    ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
+
+    public PhotoSaver(Context c, MediaPlayer m) {
         this.context = c ;
         this.mMediaPlayer = m ;
         rightNow = Calendar.getInstance();
@@ -55,15 +60,27 @@ public class PhotoSaver {
      */
     public void record(){
         if(Environment.getExternalStorageState() != null){
-
+            try{
                 image = mMediaPlayer.getCurrentFrame();
+                File picture = getOutputMediaFile();
+                FileOutputStream fos = new FileOutputStream(picture);
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
                 Bitmap photo = doGreyscale(image);
                 Bitmap resized = Bitmap.createScaledBitmap(photo,360,360,false);
-                ByteBuffer byteBuffer = ByteBuffer.allocate(129600);
                 resized.copyPixelsToBuffer(byteBuffer);
                 array [i]= byteBuffer.array();
                 i++;
-
+                Log.i(TAG, "findtime5");
+                Toast.makeText(context, "Picture saved in :" + imgname , Toast.LENGTH_SHORT).show();
+            }catch(FileNotFoundException e){
+                Toast.makeText(context, "Picture file creation failed" , Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                Toast.makeText(context, "Unable to create picture file" , Toast.LENGTH_SHORT).show();
+            }
         }else{
             Toast.makeText(context, "Internal memory not available" , Toast.LENGTH_SHORT).show();
         }

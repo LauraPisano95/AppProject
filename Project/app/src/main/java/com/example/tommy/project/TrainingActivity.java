@@ -105,7 +105,7 @@ public class TrainingActivity extends AppCompatActivity {
         try {
             new PhotoSaver(context, mVideoView.getMediaPlayer()).record();
         } catch (Exception e) {
-
+            e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
 
