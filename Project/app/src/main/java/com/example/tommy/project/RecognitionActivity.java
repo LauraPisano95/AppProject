@@ -4,12 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
-import android.content.Context;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.widget.MediaController;
@@ -101,9 +98,8 @@ public class RecognitionActivity extends AppCompatActivity {
 
     private void capturePhoto(View v) {
         try {
-            new PhotoSaver(context, mVideoView.getMediaPlayer()).record();
+            new PhotoSaver(context, mVideoView.getMediaPlayer(),null, new ImageProcessing()).record();
         } catch (Exception e) {
-
             Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
 

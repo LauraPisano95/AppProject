@@ -9,7 +9,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 
 public class MainActivity extends AppCompatActivity {
-
     Button btt_t;//Bottone Training
     Button btt_r;//Bottone Recognition
 
@@ -24,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         btt_t.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i_t = new Intent(getApplicationContext(), TrainingActivity.class);
+                Intent i_t = new Intent(getApplicationContext(), TrainingName.class);
                 startActivity(i_t);
             }
         });

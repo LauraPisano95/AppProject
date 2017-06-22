@@ -1,29 +1,26 @@
 package com.example.tommy.project;
-
 /**
  * Created by Tommy on 17/05/2017.
  */
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.sql.Date;
-import java.util.Calendar;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Calendar;
+
+import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import io.vov.vitamio.MediaPlayer;
 
 import static io.vov.vitamio.utils.Log.TAG;
-
 /**
 
  *
@@ -39,15 +36,17 @@ public class PhotoSaver {
     MediaPlayer mMediaPlayer;
     Context context;
     String imgname;
-    private byte[][] array= new byte[24][];
-    private static int i=0;
+    EigenvalueDecomposition ed;
     ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
+    ImageProcessing imgPr=new ImageProcessing();
 
-    public PhotoSaver(Context c, MediaPlayer m) {
+    public PhotoSaver(Context c, MediaPlayer m, String name, ImageProcessing imgPr) {
         this.context = c ;
         this.mMediaPlayer = m ;
+        imgname = null;
+        this.imgPr=imgPr;
         rightNow = Calendar.getInstance();
-        filename = rightNow.get(Calendar.DAY_OF_MONTH)+"_"+(rightNow.get(Calendar.MONTH)+1)+"_"+rightNow.get(Calendar.YEAR)+".jpeg";
+        filename = name + ".jpeg";
     }
 
     /**
@@ -69,8 +68,7 @@ public class PhotoSaver {
                 Bitmap photo = doGreyscale(image);
                 Bitmap resized = Bitmap.createScaledBitmap(photo,360,360,false);
                 resized.copyPixelsToBuffer(byteBuffer);
-                array [i]= byteBuffer.array();
-                i++;
+                imgPr.AddPhoto(byteBuffer.array());
                 Log.i(TAG, "findtime5");
                 Toast.makeText(context, "Picture saved in :" + imgname , Toast.LENGTH_SHORT).show();
             }catch(FileNotFoundException e){
@@ -98,7 +96,7 @@ public class PhotoSaver {
     private  File getOutputMediaFile(){
 
         rightNow = Calendar.getInstance();
-        finalname = "DronePicture_" + rightNow.get(Calendar.HOUR)+":"+rightNow.get(Calendar.MINUTE)+":"+rightNow.get(Calendar.SECOND)+"_"+filename;
+        finalname = "DronePicture_" + filename;
         //Create a media file name
         File mediaFile;
         imgname = Environment.getExternalStorageDirectory()+ "/Pictures/" + finalname;
@@ -138,7 +136,6 @@ public class PhotoSaver {
                 bmOut.setPixel(x, y, Color.argb(A, R, G, B));
             }
         }
-
         // return final image
         return bmOut;
     }

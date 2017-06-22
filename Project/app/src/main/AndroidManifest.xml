@@ -26,13 +26,19 @@
         </activity>
 
         <activity
-            android:name=".TrainingActivity"
+            android:name=".RecognitionActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:screenOrientation="portrait">
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name=".RecognitionActivity"
+            android:name=".TrainingName"
+            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="portrait">
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".PhotoHandler"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:screenOrientation="portrait">
             android:label="@string/app_name">
