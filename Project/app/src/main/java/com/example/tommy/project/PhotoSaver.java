@@ -44,7 +44,7 @@ public class PhotoSaver {
         this.context = c ;
         this.mMediaPlayer = m ;
         imgname = null;
-        this.imgPr=imgPr;
+        this.imgPr = imgPr;
         rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
     }

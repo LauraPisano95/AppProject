@@ -38,12 +38,17 @@
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name=".PhotoHandler"
+        android:name=".PhotoHandler"
+        android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+        android:screenOrientation="portrait">
+        android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".RecognitionName"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:screenOrientation="portrait">
             android:label="@string/app_name">
         </activity>
-
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

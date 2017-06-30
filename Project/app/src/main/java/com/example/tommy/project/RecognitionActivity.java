@@ -41,7 +41,7 @@ public class RecognitionActivity extends AppCompatActivity {
         if (!LibsChecker.checkVitamioLibs(this))
             return;
 
-        setContentView(R.layout.recognition);
+        setContentView(R.layout.photo_handler);
 
         context = getApplicationContext();
 
@@ -102,7 +102,6 @@ public class RecognitionActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
 }

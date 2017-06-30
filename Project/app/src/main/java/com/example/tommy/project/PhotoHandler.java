@@ -18,23 +18,22 @@ import io.vov.vitamio.widget.VideoView;
  /* Created by Tommy on 19/06/2017.
  */
 public class PhotoHandler extends AppCompatActivity {
-    //Create the processing class
-    ImageProcessing imgPr = new ImageProcessing();
+     //Create the processing class
+     ImageProcessing imgPr = new ImageProcessing();
 
      private String[] names = new String[24];
-    private Context context = null;
-//    private DroneManager droneManager = null;
+     private Context context = null;
+//   private DroneManager droneManager = null;
+     private static final String TAG = "MainActivity";
+     private static int count=0;
+     private static int i=0;
+     private VideoView mVideoView;
+     private final String PATH = "tcp://192.168.1.1:5555/";
+     private String name;
+//   public final String CommandeDepart = "COMMANDE_INUTILE";
 
-    private static final String TAG = "MainActivity";
-    private static int count=0;
-    private static int i=0;
-    private VideoView mVideoView;
-    private final String PATH = "tcp://192.168.1.1:5555/";
-    private String name;
-//    public final String CommandeDepart = "COMMANDE_INUTILE";
-
-//    public final int iPort = 5556;
-//    public final String AdresseDrone = "192.168.1.1";
+//   public final int iPort = 5556;
+//   public final String AdresseDrone = "192.168.1.1";
 
 
     // private TakePictureButtonView myTakePicBtt = null;
@@ -47,7 +46,7 @@ public class PhotoHandler extends AppCompatActivity {
             if (!LibsChecker.checkVitamioLibs(this))
                 return;
 
-            setContentView(R.layout.handler);
+            setContentView(R.layout.photo_handler);
 
             context = getApplicationContext();
 
