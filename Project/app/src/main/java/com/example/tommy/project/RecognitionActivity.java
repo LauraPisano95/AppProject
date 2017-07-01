@@ -1,16 +1,25 @@
 package com.example.tommy.project;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.widget.MediaController;
 import io.vov.vitamio.widget.VideoView;
+
+import static com.example.tommy.project.PhotoSaver.doGreyscale;
+
 /**
  * Created by Tommy on 10/05/2017.
  */
@@ -91,17 +100,51 @@ public class RecognitionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "setOnClickListener");
-                capturePhoto(null);
+                //capturePhoto(null);
+                Bitmap recPhoto = GetPhoto();
+                ImageProcessing img = new ImageProcessing();
+                boolean s = img.GetError();
+                Intent i_2 = new Intent(getApplicationContext(), RecognitionName.class);
+                i_2.putExtra("image", createImageFromBitmap(recPhoto));
+                i_2.putExtra("success", s);
+                startActivity(i_2);
+
             }
         });
     }
 
-    private void capturePhoto(View v) {
+    /*private void capturePhoto(View v) {
         try {
             new PhotoSaver(context, mVideoView.getMediaPlayer(),null, new ImageProcessing()).record();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
+    }*/
+
+    private Bitmap GetPhoto(){
+        MediaPlayer mMediaPlayer = mVideoView.getMediaPlayer();
+        Bitmap colorPhoto =  mMediaPlayer.getCurrentFrame();
+        Bitmap photo = doGreyscale(colorPhoto);
+        int size = photo.getRowBytes()*photo.getHeight();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+        photo.copyPixelsToBuffer(byteBuffer);
+        Bitmap resized = Bitmap.createScaledBitmap(photo,360,360,false);
+        return resized;
     }
 
+    public String createImageFromBitmap(Bitmap bitmap) {
+        String fileName = "myImage";//no .png or .jpg needed
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            FileOutputStream fo = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fo.write(bytes.toByteArray());
+            // remember close file output
+            fo.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fileName = null;
+        }
+        return fileName;
+    }
 }

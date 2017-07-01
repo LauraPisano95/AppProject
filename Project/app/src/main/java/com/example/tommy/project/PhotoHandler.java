@@ -25,8 +25,8 @@ public class PhotoHandler extends AppCompatActivity {
      private Context context = null;
 //   private DroneManager droneManager = null;
      private static final String TAG = "MainActivity";
-     private static int count=0;
-     private static int i=0;
+     private static int count = 0;
+     private static int i = 0;
      private VideoView mVideoView;
      private final String PATH = "tcp://192.168.1.1:5555/";
      private String name;
@@ -91,11 +91,6 @@ public class PhotoHandler extends AppCompatActivity {
                 }
             });
 
-            //Take name from the previous activity
-            Intent myIntent = getIntent();
-            name = myIntent.getStringExtra("name");
-            names[i] = name;
-            i++;
             bttCapturePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -114,6 +109,13 @@ public class PhotoHandler extends AppCompatActivity {
         count++;
         if (count == 4) {
             count = 0;
+            //Take name from the previous activity
+            Intent myIntent = getIntent();
+            name = myIntent.getStringExtra("name");
+            for(int j=i;j<i+4;i++){
+                names[j] = name;
+            }
+            i+=4;
             finish();
         }
         else {

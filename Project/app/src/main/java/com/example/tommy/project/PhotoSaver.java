@@ -38,7 +38,7 @@ public class PhotoSaver {
     String imgname;
     EigenvalueDecomposition ed;
     ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
-    ImageProcessing imgPr=new ImageProcessing();
+    ImageProcessing imgPr = new ImageProcessing();
 
     public PhotoSaver(Context c, MediaPlayer m, String name, ImageProcessing imgPr) {
         this.context = c ;

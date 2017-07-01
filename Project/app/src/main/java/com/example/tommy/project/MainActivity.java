@@ -1,16 +1,14 @@
 package com.example.tommy.project;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
 
 public class MainActivity extends AppCompatActivity {
-    Button btt_t;//Bottone Training
-    Button btt_r;//Bottone Recognition
+    Button btt_t;//Training button
+    Button btt_r;//Recognition button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         btt_t = (Button) findViewById(R.id.bttTraining);
         btt_r = (Button) findViewById(R.id.bttRecognition);
 
-        //Avvio Activity di Training
+        //Training activity
         btt_t.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -28,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Avvio Activity di Recognition
+        //Recognition activity
         btt_r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
