@@ -36,7 +36,7 @@ public class RecognitionName extends AppCompatActivity {
         catch(FileNotFoundException e){
             e.printStackTrace();
         }
-        Bitmap bmp2=null;
+        Bitmap bmp2 =null;
         if(r){
             _data = "nome e cognome";
             //Trovare foto dal training set

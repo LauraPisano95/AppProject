@@ -12,7 +12,7 @@ import static android.os.Build.VERSION_CODES.N;
  */
 
 public class ImageProcessing {
-    //129600 = 360*360*24
+    //129600 = 360*360
     private byte[][] arrayImages = new byte[24][];
     private byte[] meanImage = new byte[129600];
     private byte[][] phi_i = new byte[24][];
@@ -25,7 +25,7 @@ public class ImageProcessing {
     DoubleMatrix2D eigenfaces;
     DoubleMatrix2D eigenVectors;
     DoubleMatrix1D Ohmega;
-    private static int index = 0;
+    public static int index = 0;
 
     //Constructor
     public ImageProcessing(){
@@ -36,9 +36,11 @@ public class ImageProcessing {
 
     //Methods
     public void AddPhoto(byte[] picture){
-        arrayImages[index]= picture;
-        index++;
-        if(index == 24){
+        if(index<24) {
+            arrayImages[index] = picture;
+            index++;
+        }
+        else{
             GetMeanImage();
             GetPhi_i();
             GetEigenVectors();
@@ -59,7 +61,7 @@ public class ImageProcessing {
     }
 
     public void GetPhi_i() {
-        for (int i = 0; i < 23; i++) {
+        for (int i = 0; i < 24; i++) {
             for (int j = 0; j < 129600; j++) {
                 doubleArrayPhi_i[i][j] = arrayImages[i][j] - meanImage[j];
             }
@@ -300,7 +302,6 @@ public class ImageProcessing {
 
     //-------------------------------------Da qua in poi serve la fase di Recognition
     public void GetPhi(byte[] newImage){
-
         for (int j = 0; j < 129600; j++) {
             doublePhi[j] = newImage[j] - meanImage[j];
         }

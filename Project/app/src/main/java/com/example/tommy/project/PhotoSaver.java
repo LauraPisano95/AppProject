@@ -48,7 +48,12 @@ public class PhotoSaver {
         rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
     }
-
+    public PhotoSaver( String name, ImageProcessing imgPr) {
+        imgname = null;
+        this.imgPr = imgPr;
+        rightNow = Calendar.getInstance();
+        filename = name + ".jpeg";
+    }
     /**
 
      *
