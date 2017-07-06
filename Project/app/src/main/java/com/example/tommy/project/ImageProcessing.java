@@ -1,5 +1,8 @@
 package com.example.tommy.project;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
@@ -11,9 +14,9 @@ import static android.os.Build.VERSION_CODES.N;
  * Created by Tommy on 19/06/2017.
  */
 
-public class ImageProcessing {
+public class ImageProcessing implements Parcelable{
     //129600 = 360*360
-    private byte[][] arrayImages = new byte[24][];
+    public byte[][] arrayImages = new byte[24][];
     private byte[] meanImage = new byte[129600];
     private byte[][] phi_i = new byte[24][];
     private byte[] phi = new byte[129600];
@@ -25,15 +28,36 @@ public class ImageProcessing {
     DoubleMatrix2D eigenfaces;
     DoubleMatrix2D eigenVectors;
     DoubleMatrix1D Ohmega;
-    public static int index = 0;
-
+    public int index = 0;
     //Constructor
     public ImageProcessing(){
     }
-    public ImageProcessing(byte[][] arrayImages){
-        this.arrayImages=arrayImages;
+    public ImageProcessing(Parcel parcel){
+        this.index=parcel.readInt();
     }
+    /*public ImageProcessing(byte[][] arrayImages){
+        this.arrayImages=arrayImages;
+    }*/
 
+    //Interface methods
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(index);
+    }
+    public final static Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        @Override
+        public ImageProcessing createFromParcel(Parcel source) {
+            return new ImageProcessing(source);
+        }
+        @Override
+        public ImageProcessing[] newArray(int size) {
+            return new ImageProcessing[size];
+        }
+    };
     //Methods
     public void AddPhoto(byte[] picture){
         if(index<24) {
@@ -110,7 +134,7 @@ public class ImageProcessing {
 
             }
 
-            @Override
+             @Override
             protected DoubleMatrix2D viewSelectionLike(int[] ints, int[] ints1) {
                 return null;
             }

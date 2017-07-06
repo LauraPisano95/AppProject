@@ -20,7 +20,8 @@ import java.util.Calendar;
 import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import io.vov.vitamio.MediaPlayer;
 
-import static io.vov.vitamio.utils.Log.TAG;
+import static android.content.ContentValues.TAG;
+
 /**
 
  *
@@ -39,7 +40,7 @@ public class PhotoSaver {
     EigenvalueDecomposition ed;
     ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
     ImageProcessing imgPr = new ImageProcessing();
-
+byte[] a=new byte[129600];
     public PhotoSaver(Context c, MediaPlayer m, String name, ImageProcessing imgPr) {
         this.context = c ;
         this.mMediaPlayer = m ;
@@ -70,8 +71,8 @@ public class PhotoSaver {
                 FileOutputStream fos = new FileOutputStream(picture);
                 image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
-                Bitmap photo = doGreyscale(image);
-                Bitmap resized = Bitmap.createScaledBitmap(photo,360,360,false);
+                a = doGreyscale(image);
+                Bitmap resized = Bitmap.createScaledBitmap(image,360,360,false);//-----------------------------------------
                 resized.copyPixelsToBuffer(byteBuffer);
                 imgPr.AddPhoto(byteBuffer.array());
                 Log.i(TAG, "findtime5");
@@ -88,7 +89,6 @@ public class PhotoSaver {
             Toast.makeText(context, "Internal memory not available" , Toast.LENGTH_SHORT).show();
         }
     }
-
 
     /**
 
@@ -109,18 +109,20 @@ public class PhotoSaver {
         return mediaFile;
     }
 
-    public static Bitmap doGreyscale(Bitmap src) {
+    public static byte[] doGreyscale(Bitmap src) {
         // constant factors
         final double GS_RED = 0.299;
         final double GS_GREEN = 0.587;
         final double GS_BLUE = 0.114;
 
         // create output bitmap
-        Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        //Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
         // pixel information
         int A, R, G, B;
         int pixel;
-
+        byte[] greyPixels = new byte[129600];
+        int i=0;
+        int value=0;
         // get image size
         int width = src.getWidth();
         int height = src.getHeight();
@@ -137,12 +139,22 @@ public class PhotoSaver {
                 B = Color.blue(pixel);
                 // take conversion up to one single value
                 R = G = B = (int)(GS_RED * R + GS_GREEN * G + GS_BLUE * B);
+                if (G >= 128) {
+                    G = 127;
+                }
+                else if(G<-128){
+                    G=-128;
+                }
+                greyPixels[i]= (byte) G;
+                value = greyPixels[i] & 0xFF;
+                i++;
                 // set new pixel color to output bitmap
-                bmOut.setPixel(x, y, Color.argb(A, R, G, B));
+                //bmOut.setPixel(x, y, Color.red(R));
             }
         }
         // return final image
-        return bmOut;
+        //return bmOut;
+        return greyPixels;
     }
 }
 

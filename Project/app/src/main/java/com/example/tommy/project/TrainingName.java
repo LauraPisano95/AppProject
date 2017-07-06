@@ -18,6 +18,8 @@ public class TrainingName extends AppCompatActivity {
     //Button btt_l;//Load existing training set
     Button btt_p;//Phone camera
     String _name;
+    ImageProcessing imgPr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,7 @@ public class TrainingName extends AppCompatActivity {
         etName = (EditText)findViewById(R.id.etName);
         //btt_l=(Button) findViewById(R.id.bttLoad);
         btt_p =(Button) findViewById(R.id.bttCell);
+        imgPr=new ImageProcessing();
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +54,7 @@ public class TrainingName extends AppCompatActivity {
                 }
                 else{
                     Intent i_3 = new Intent(getApplicationContext(), CellPhoto.class);
+                    i_3.putExtra("imgPr", imgPr);
                     i_3.putExtra("name", _name);
                     startActivity(i_3);
                 }
@@ -65,5 +69,12 @@ public class TrainingName extends AppCompatActivity {
 //            }
 //        });
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent myIntent = getIntent();
+        byte[] photo = myIntent.getByteArrayExtra("photo");
+        imgPr.AddPhoto(photo);
     }
 }

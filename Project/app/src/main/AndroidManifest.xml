@@ -50,11 +50,7 @@
             android:label="@string/app_name">
         </activity>
         <activity android:name=".CellPhoto">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
     <uses-feature android:name="android.hardware.camera"></uses-feature>

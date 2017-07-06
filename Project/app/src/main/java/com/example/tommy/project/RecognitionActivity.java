@@ -27,7 +27,7 @@ import static com.example.tommy.project.PhotoSaver.doGreyscale;
 public class RecognitionActivity extends AppCompatActivity {
     private Context context = null;
 //    private DroneManager droneManager = null;
-
+byte[] a=new byte[129600];//-------------------------------------------------------------------
     private static final String TAG = "MainActivity";
 
     private VideoView mVideoView;
@@ -124,7 +124,8 @@ public class RecognitionActivity extends AppCompatActivity {
     private Bitmap GetPhoto(){
         MediaPlayer mMediaPlayer = mVideoView.getMediaPlayer();
         Bitmap colorPhoto =  mMediaPlayer.getCurrentFrame();
-        Bitmap photo = doGreyscale(colorPhoto);
+        Bitmap photo = null;//----
+        a = doGreyscale(colorPhoto);
         int size = photo.getRowBytes()*photo.getHeight();
         ByteBuffer byteBuffer = ByteBuffer.allocate(size);
         photo.copyPixelsToBuffer(byteBuffer);
