@@ -139,21 +139,11 @@ byte[] a=new byte[129600];
                 B = Color.blue(pixel);
                 // take conversion up to one single value
                 R = G = B = (int)(GS_RED * R + GS_GREEN * G + GS_BLUE * B);
-                if (G >= 128) {
-                    G = 127;
-                }
-                else if(G<-128){
-                    G=-128;
-                }
                 greyPixels[i]= (byte) G;
-                value = greyPixels[i] & 0xFF;
                 i++;
-                // set new pixel color to output bitmap
-                //bmOut.setPixel(x, y, Color.red(R));
             }
         }
         // return final image
-        //return bmOut;
         return greyPixels;
     }
 }

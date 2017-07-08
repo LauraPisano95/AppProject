@@ -26,10 +26,7 @@ public class CellPhoto extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
     private static int i = 0;
-    private int count = 0;
     byte[] train_photo = new byte[129600];
-    //Create the processing class
-    ImageProcessing imgPr;
     private String[] names = new String[24];
     Context context;
     String imgname;
@@ -41,9 +38,9 @@ public class CellPhoto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo_cell);
         this.imageView = (ImageView) this.findViewById(R.id.imageView1);
-        if(i!=2) {
-            Intent i_4 = getIntent();
+        if(i!=3) {
             //Take name from the previous activity
+            Intent i_4 = getIntent();
             name = i_4.getStringExtra("name");
             names[i]=name;
             i++;
@@ -54,6 +51,7 @@ public class CellPhoto extends AppCompatActivity {
         }
         else{
             Toast.makeText(getApplicationContext(), "Massimo range di foto raggiunto!!", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -96,9 +94,10 @@ public class CellPhoto extends AppCompatActivity {
         mediaFile = new File(imgname);
         return mediaFile;
     }
-    private void finishActivity(){
+    private void finishActivity() {
         Intent i_5 = new Intent(getApplicationContext(), TrainingName.class);
         i_5.putExtra("photo", train_photo);
         startActivity(i_5);
+        finish();
     }
 }

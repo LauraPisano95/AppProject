@@ -3,11 +3,11 @@ package com.example.tommy.project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 /**
  * Created by Tommy on 19/06/2017.
  */
@@ -18,17 +18,19 @@ public class TrainingName extends AppCompatActivity {
     //Button btt_l;//Load existing training set
     Button btt_p;//Phone camera
     String _name;
-    ImageProcessing imgPr;
-
+    static ImageProcessing imgPr;
+    byte[] photo;
+    private static final String TAG = "TrainingName_Activity";
+    private static boolean b = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.training_name);
         btt_c = (Button) findViewById(R.id.bttConf);
         etName = (EditText)findViewById(R.id.etName);
-        //btt_l=(Button) findViewById(R.id.bttLoad);
-        btt_p =(Button) findViewById(R.id.bttCell);
-        imgPr=new ImageProcessing();
+        //btt_l = (Button) findViewById(R.id.bttLoad);
+        btt_p = (Button) findViewById(R.id.bttCell);
+        Log.i(TAG, "onCreate: ");
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +46,6 @@ public class TrainingName extends AppCompatActivity {
                 }
             }
         });
-
         btt_p.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +55,6 @@ public class TrainingName extends AppCompatActivity {
                 }
                 else{
                     Intent i_3 = new Intent(getApplicationContext(), CellPhoto.class);
-                    i_3.putExtra("imgPr", imgPr);
                     i_3.putExtra("name", _name);
                     startActivity(i_3);
                 }
@@ -71,10 +71,17 @@ public class TrainingName extends AppCompatActivity {
 
     }
     @Override
-    protected void onResume() {
+    protected void onResume(){
         super.onResume();
-        Intent myIntent = getIntent();
-        byte[] photo = myIntent.getByteArrayExtra("photo");
-        imgPr.AddPhoto(photo);
+        if(b) {
+            Log.i(TAG, "onResume: ");
+            Intent myIntent = getIntent();
+            photo = myIntent.getByteArrayExtra("photo");
+            imgPr.AddPhoto(photo);
+        }
+        else{
+            b = true;
+            imgPr=new ImageProcessing();
+        }
     }
 }

@@ -27,7 +27,7 @@ public class RecognitionName extends AppCompatActivity {
         tvPrint = (TextView)findViewById(R.id.tvPrint);
         ivPhoto = (ImageView) findViewById(R.id.ivPhoto);
         ivSimilar = (ImageView) findViewById(R.id.ivPhoto);
-        Bitmap bitmap=null;
+        Bitmap bitmap = null;
         Intent myIntent = getIntent();
         boolean r = myIntent.getBooleanExtra("success",false);
         try {
@@ -36,7 +36,7 @@ public class RecognitionName extends AppCompatActivity {
         catch(FileNotFoundException e){
             e.printStackTrace();
         }
-        Bitmap bmp2 =null;
+        Bitmap bmp2 = null;
         if(r){
             _data = "nome e cognome";
             //Trovare foto dal training set

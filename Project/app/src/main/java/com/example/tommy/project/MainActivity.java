@@ -35,4 +35,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+   /* protected void onResume() {
+        super.onResume();
+        Intent myIntent = getIntent();
+        double[] a = myIntent.getDoubleArrayExtra("doubleMeanImage");
+        //double[][] b= myIntent;
+    }*/
 }
