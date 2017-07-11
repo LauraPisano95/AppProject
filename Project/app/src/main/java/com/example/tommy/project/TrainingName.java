@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 /**
  * Created by Tommy on 19/06/2017.
  */
@@ -17,11 +18,12 @@ public class TrainingName extends AppCompatActivity {
     EditText etName;
     //Button btt_l;//Load existing training set
     Button btt_p;//Phone camera
-    String _name;
+    String _name;//Data of the subject
     static ImageProcessing imgPr;
     byte[] photo;
     private static final String TAG = "TrainingName_Activity";
     private static boolean b = false;
+    private static int counter=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,17 @@ public class TrainingName extends AppCompatActivity {
         //btt_l = (Button) findViewById(R.id.bttLoad);
         btt_p = (Button) findViewById(R.id.bttCell);
         Log.i(TAG, "onCreate: ");
+
+        if(counter==3){
+            imgPr.GetMeanImage();
+            Log.i(TAG, "GetMeanImage: ");
+            imgPr.GetPhi_i();
+            Log.i(TAG, "GetPhi_i: ");
+            imgPr.GetEigenVectors();
+            Log.i(TAG, "GetEigenVectors: ");
+            imgPr.GetEigenfacesTraining();
+            Log.i(TAG, "GetEigenfacesTraining: ");
+        }
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +59,7 @@ public class TrainingName extends AppCompatActivity {
                 }
             }
         });
+
         btt_p.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,11 +91,14 @@ public class TrainingName extends AppCompatActivity {
             Log.i(TAG, "onResume: ");
             Intent myIntent = getIntent();
             photo = myIntent.getByteArrayExtra("photo");
-            imgPr.AddPhoto(photo);
+            if(photo != null){
+                imgPr.AddPhoto(photo);
+                counter++;
+            }
         }
         else{
             b = true;
-            imgPr=new ImageProcessing();
+            imgPr = new ImageProcessing();
         }
     }
 }

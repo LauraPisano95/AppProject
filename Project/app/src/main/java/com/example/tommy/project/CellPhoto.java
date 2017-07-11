@@ -26,24 +26,25 @@ public class CellPhoto extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
     private static int i = 0;
-    byte[] train_photo = new byte[129600];
+    byte[] train_photo;
     private String[] names = new String[24];
     Context context;
     String imgname;
     String filename;
     String finalname;
     String name;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo_cell);
         this.imageView = (ImageView) this.findViewById(R.id.imageView1);
+        train_photo=null;
         if(i!=3) {
             //Take name from the previous activity
             Intent i_4 = getIntent();
             name = i_4.getStringExtra("name");
             names[i]=name;
-            i++;
             filename = name + ".jpeg";
             context = getApplicationContext();
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -66,12 +67,14 @@ public class CellPhoto extends AppCompatActivity {
         if(Environment.getExternalStorageState() != null) {
             try {
                 Bitmap resized = Bitmap.createScaledBitmap(colorPhoto, 360, 360, false);
+                train_photo=new byte[129600];
                 train_photo = doGreyscale(resized);
                 File picture = getOutputMediaFile();
                 FileOutputStream fos = new FileOutputStream(picture);
                 resized.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
                 Toast.makeText(context, "Picture saved in :" + imgname, Toast.LENGTH_SHORT).show();
+                i++;
                 finishActivity();
             } catch (FileNotFoundException e) {
                 Toast.makeText(context, "Picture file creation failed", Toast.LENGTH_SHORT).show();
@@ -99,5 +102,9 @@ public class CellPhoto extends AppCompatActivity {
         i_5.putExtra("photo", train_photo);
         startActivity(i_5);
         finish();
+    }
+    @Override
+    public void onBackPressed() {
+        finishActivity();
     }
 }

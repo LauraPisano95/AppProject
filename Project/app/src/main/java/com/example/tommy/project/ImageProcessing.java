@@ -39,12 +39,6 @@ public class ImageProcessing extends Application {
     public void AddPhoto(byte[] picture){
             arrayImages[index] = picture;
             index++;
-        if(index == 8){
-            GetMeanImage();
-            GetPhi_i();
-            GetEigenVectors();
-            GetEigenfacesTraining();
-        }
     }
 
     public void GetMeanImage() {
