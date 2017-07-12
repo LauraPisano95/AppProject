@@ -16,7 +16,7 @@ import android.widget.Toast;
 public class TrainingName extends AppCompatActivity {
     Button btt_c;//Confirm
     EditText etName;
-    //Button btt_l;//Load existing training set
+    Button btt_l;//Load existing training set
     Button btt_p;//Phone camera
     String _name;//Data of the subject
     static ImageProcessing imgPr;
@@ -30,20 +30,11 @@ public class TrainingName extends AppCompatActivity {
         setContentView(R.layout.training_name);
         btt_c = (Button) findViewById(R.id.bttConf);
         etName = (EditText)findViewById(R.id.etName);
-        //btt_l = (Button) findViewById(R.id.bttLoad);
+        btt_l = (Button) findViewById(R.id.bttLoad);
         btt_p = (Button) findViewById(R.id.bttCell);
         Log.i(TAG, "onCreate: ");
-
-        if(counter==3){
-            imgPr.GetMeanImage();
-            Log.i(TAG, "GetMeanImage: ");
-            imgPr.GetPhi_i();
-            Log.i(TAG, "GetPhi_i: ");
-            imgPr.GetEigenVectors();
-            Log.i(TAG, "GetEigenVectors: ");
-            imgPr.GetEigenfacesTraining();
-            Log.i(TAG, "GetEigenfacesTraining: ");
-        }
+        //ImageProcessing app = (ImageProcessing) getApplicationContext();
+        //photo_training = app.getArrayImages();
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,14 +66,15 @@ public class TrainingName extends AppCompatActivity {
             }
         });
 
-//        btt_l.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                costruire la classe ImageProcessing con training set e lanciare i metodi
-//
-//            }
-//        });
-
+        btt_l.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(counter==3){
+                    imgPr.GetMeanImage();
+                    Log.i(TAG, "MeanImage: ");
+                }
+            }
+        });
     }
     @Override
     protected void onResume(){
@@ -94,6 +86,7 @@ public class TrainingName extends AppCompatActivity {
             if(photo != null){
                 imgPr.AddPhoto(photo);
                 counter++;
+                Log.i(TAG, "Aggiunta foto: ");
             }
         }
         else{

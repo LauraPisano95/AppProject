@@ -4,6 +4,7 @@ package com.example.tommy.project;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
@@ -39,22 +40,22 @@ public class PhotoSaver {
     String imgname;
     EigenvalueDecomposition ed;
     ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
-    ImageProcessing imgPr = new ImageProcessing();
-byte[] a=new byte[129600];
-    public PhotoSaver(Context c, MediaPlayer m, String name, ImageProcessing imgPr) {
+    //ImageProcessing imgPr = new ImageProcessing();
+    byte[] photo_train =new byte[129600];
+
+    public PhotoSaver(Context c, MediaPlayer m, String name) {
         this.context = c ;
         this.mMediaPlayer = m ;
         imgname = null;
-        this.imgPr = imgPr;
         rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
     }
-    public PhotoSaver( String name, ImageProcessing imgPr) {
+    /*public PhotoSaver( String name, ImageProcessing imgPr) {
         imgname = null;
         this.imgPr = imgPr;
         rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
-    }
+    }*/
     /**
 
      *
@@ -71,10 +72,9 @@ byte[] a=new byte[129600];
                 FileOutputStream fos = new FileOutputStream(picture);
                 image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
-                a = doGreyscale(image);
-                Bitmap resized = Bitmap.createScaledBitmap(image,360,360,false);//-----------------------------------------
-                resized.copyPixelsToBuffer(byteBuffer);
-                imgPr.AddPhoto(byteBuffer.array());
+                Bitmap resized = Bitmap.createScaledBitmap(image,360,360,false);
+                photo_train = doGreyscale(resized);
+                //imgPr.AddPhoto(photo_train);
                 Log.i(TAG, "findtime5");
                 Toast.makeText(context, "Picture saved in :" + imgname , Toast.LENGTH_SHORT).show();
             }catch(FileNotFoundException e){

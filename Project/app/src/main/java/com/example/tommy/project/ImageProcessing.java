@@ -35,6 +35,13 @@ public class ImageProcessing extends Application {
     }*/
 
     //Properties of singleton
+    public void setArrayImages(byte[][] arrayImages){
+        this.arrayImages= arrayImages;
+    }
+    public byte[][] getArrayImages() {
+        return arrayImages;
+    }
+
     //Methods
     public void AddPhoto(byte[] picture){
             arrayImages[index] = picture;

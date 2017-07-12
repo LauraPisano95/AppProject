@@ -24,20 +24,20 @@
             android:layout_height="60dp"
             android:text="Confirm" />
 
-        <!--<TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\n\n\n\n\n\n\n\nCarica training set predefinito cliccando su load:"/>
+            android:text="\n\n\n\n\nCarica training set predefinito cliccando su load:"/>
         <Button
             android:id="@+id/bttLoad"
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:text="LOAD" />
-            -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\n\n\n\n\n\n\nScatta la foto dal cellulare:"/>
+            android:text="\n\n\n\nScatta la foto dal cellulare:"/>
         <Button
             android:id="@+id/bttCell"
             android:layout_width="150dp"

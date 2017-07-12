@@ -3,12 +3,15 @@ package com.example.tommy.project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     Button btt_t;//Training button
     Button btt_r;//Recognition button
+
+    //ImageProcessing app = (ImageProcessing) getApplicationContext();//Singleton instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

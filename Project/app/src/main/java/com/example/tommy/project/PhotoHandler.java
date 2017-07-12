@@ -18,8 +18,6 @@ import io.vov.vitamio.widget.VideoView;
  /* Created by Tommy on 19/06/2017.
  */
 public class PhotoHandler extends AppCompatActivity {
-     //Create the processing class
-     ImageProcessing imgPr = new ImageProcessing();
 
      private String[] names = new String[24];
      private Context context = null;
@@ -30,6 +28,7 @@ public class PhotoHandler extends AppCompatActivity {
      private VideoView mVideoView;
      private final String PATH = "tcp://192.168.1.1:5555/";
      private String name;
+     PhotoSaver phs;
 //   public final String CommandeDepart = "COMMANDE_INUTILE";
 
 //   public final int iPort = 5556;
@@ -42,7 +41,7 @@ public class PhotoHandler extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(i!=24) {
+        if(i!= 5) {
             if (!LibsChecker.checkVitamioLibs(this))
                 return;
 
@@ -99,7 +98,7 @@ public class PhotoHandler extends AppCompatActivity {
                 }
             });
         }
-     else{
+        else{
             Toast.makeText(getApplicationContext(), "Massimo range di foto raggiunto!!", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -107,24 +106,25 @@ public class PhotoHandler extends AppCompatActivity {
 
     private void capturePhoto(View v) {
         count++;
-        if (count == 4) {
-            count = 0;
-            //Take name from the previous activity
-            Intent myIntent = getIntent();
-            name = myIntent.getStringExtra("name");
-            for(int j=i;j<i+4;i++){
-                names[j] = name;
-            }
-            i+=4;
-            finish();
+        //Take name from the previous activity
+        Intent myIntent = getIntent();
+        name = myIntent.getStringExtra("name");
+        for (int j = i; j < i + 4; i++) {
+            names[j] = name;
         }
-        else {
-            try {
-                new PhotoSaver(context, mVideoView.getMediaPlayer(), name, imgPr).record();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
-            }
+        i += 4;
+        try {
+            phs = new PhotoSaver(context, mVideoView.getMediaPlayer(), name);
+            phs.record();
+            Intent i_6 = new Intent(getApplicationContext(), TrainingName.class);
+            i_6.putExtra("photo",   phs.photo_train);
+            startActivity(i_6);
+            finish();
+            //ImageProcessing app = (ImageProcessing) getApplicationContext();
+            //app.AddPhoto(phs.photo_train);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
     }
 }
