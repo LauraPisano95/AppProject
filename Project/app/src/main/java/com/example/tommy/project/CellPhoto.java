@@ -20,13 +20,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static com.example.tommy.project.PhotoSaver.doGreyscale;
+import static com.example.tommy.project.PhotoSaver.GreyScaleBitmapToDoubleArray;
 
 public class CellPhoto extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
     private static int i = 0;
-    byte[] train_photo;
+    double[] train_photo;
+    Bitmap colorPhoto;
+    Bitmap greyphoto;
     private String[] names = new String[24];
     Context context;
     String imgname;
@@ -39,7 +41,7 @@ public class CellPhoto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo_cell);
         this.imageView = (ImageView) this.findViewById(R.id.imageView1);
-        train_photo=null;
+        train_photo = null;//It return null value with finishActivity()
         if(i!=3) {
             //Take name from the previous activity
             Intent i_4 = getIntent();
@@ -58,7 +60,7 @@ public class CellPhoto extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap colorPhoto = (Bitmap) data.getExtras().get("data");
+            colorPhoto = (Bitmap) data.getExtras().get("data");
             PreparePhoto(colorPhoto);
         }
     }
@@ -67,15 +69,15 @@ public class CellPhoto extends AppCompatActivity {
         if(Environment.getExternalStorageState() != null) {
             try {
                 Bitmap resized = Bitmap.createScaledBitmap(colorPhoto, 360, 360, false);
-                train_photo=new byte[129600];
-                train_photo = doGreyscale(resized);
+                train_photo = new double[129600];
+                train_photo = GreyScaleBitmapToDoubleArray(resized);
                 File picture = getOutputMediaFile();
                 FileOutputStream fos = new FileOutputStream(picture);
                 resized.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
-                Toast.makeText(context, "Picture saved in :" + imgname, Toast.LENGTH_SHORT).show();
                 i++;
-                finishActivity();
+                Toast.makeText(context, "Picture saved in :" + imgname, Toast.LENGTH_SHORT).show();
+                FinishActivity();
             } catch (FileNotFoundException e) {
                 Toast.makeText(context, "Picture file creation failed", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
@@ -97,14 +99,15 @@ public class CellPhoto extends AppCompatActivity {
         mediaFile = new File(imgname);
         return mediaFile;
     }
-    private void finishActivity() {
+    private void FinishActivity() {
         Intent i_5 = new Intent(getApplicationContext(), TrainingName.class);
         i_5.putExtra("photo", train_photo);
         startActivity(i_5);
         finish();
     }
+
     @Override
     public void onBackPressed() {
-        finishActivity();
+        FinishActivity();
     }
 }

@@ -15,7 +15,7 @@
 
         <EditText
             android:id="@+id/etName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
@@ -24,26 +24,33 @@
             android:layout_height="60dp"
             android:text="Confirm" />
 
-        <!--<TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\n\n\n\n\n\n\n\nCarica training set predefinito cliccando su load:"/>
+            android:text="\n\n\nCarica training set predefinito cliccando su load:"/>
         <Button
             android:id="@+id/bttLoad"
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:text="LOAD" />
-            -->
-        <TextView
+
+ <!--       <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\n\n\n\n\n\n\nScatta la foto dal cellulare:"/>
+            android:text="\n\n\nScatta la foto dal cellulare:"/>
         <Button
             android:id="@+id/bttCell"
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:text="CELL" />
+-->
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content">
 
+        </ImageView>
     </LinearLayout>
 
 </LinearLayout>

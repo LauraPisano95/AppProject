@@ -14,10 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Calendar;
 
-import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import io.vov.vitamio.MediaPlayer;
 
 import static android.content.ContentValues.TAG;
@@ -33,28 +30,23 @@ public class PhotoSaver {
     String filename;
     String finalname;
     Bitmap image;
-    Calendar rightNow;
     MediaPlayer mMediaPlayer;
     Context context;
     String imgname;
-    EigenvalueDecomposition ed;
-    ByteBuffer byteBuffer = ByteBuffer.allocate(518400);
-    ImageProcessing imgPr = new ImageProcessing();
-byte[] a=new byte[129600];
-    public PhotoSaver(Context c, MediaPlayer m, String name, ImageProcessing imgPr) {
+    byte[] a = new byte[129600];
+
+    public PhotoSaver(Context c, MediaPlayer m, String name) {
         this.context = c ;
         this.mMediaPlayer = m ;
         imgname = null;
-        this.imgPr = imgPr;
-        rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
     }
-    public PhotoSaver( String name, ImageProcessing imgPr) {
+    /*public PhotoSaver( String name, ImageProcessing imgPr) {
         imgname = null;
         this.imgPr = imgPr;
         rightNow = Calendar.getInstance();
         filename = name + ".jpeg";
-    }
+    }*/
     /**
 
      *
@@ -67,15 +59,15 @@ byte[] a=new byte[129600];
         if(Environment.getExternalStorageState() != null){
             try{
                 image = mMediaPlayer.getCurrentFrame();
+                //Bitmap resized = Bitmap.createScaledBitmap(image,360,360,false);
+                Bitmap resized = ResizePhoto(image);
+                Bitmap photo = doGreyscale(resized);
                 File picture = getOutputMediaFile();
                 FileOutputStream fos = new FileOutputStream(picture);
                 image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
-                a = doGreyscale(image);
-                Bitmap resized = Bitmap.createScaledBitmap(image,360,360,false);//-----------------------------------------
-                resized.copyPixelsToBuffer(byteBuffer);
-                imgPr.AddPhoto(byteBuffer.array());
-                Log.i(TAG, "findtime5");
+                //a = GreyScaleBitmapToByteArray(resized);
+                Log.i(TAG, "doGreyScale");
                 Toast.makeText(context, "Picture saved in :" + imgname , Toast.LENGTH_SHORT).show();
             }catch(FileNotFoundException e){
                 Toast.makeText(context, "Picture file creation failed" , Toast.LENGTH_SHORT).show();
@@ -99,8 +91,6 @@ byte[] a=new byte[129600];
 
      */
     private  File getOutputMediaFile(){
-
-        rightNow = Calendar.getInstance();
         finalname = "DronePicture_" + filename;
         //Create a media file name
         File mediaFile;
@@ -109,20 +99,12 @@ byte[] a=new byte[129600];
         return mediaFile;
     }
 
-    public static byte[] doGreyscale(Bitmap src) {
-        // constant factors
-        final double GS_RED = 0.299;
-        final double GS_GREEN = 0.587;
-        final double GS_BLUE = 0.114;
-
-        // create output bitmap
-        //Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+    public static double[] GreyScaleBitmapToDoubleArray(Bitmap src) {
         // pixel information
-        int A, R, G, B;
+        int  G;
         int pixel;
-        byte[] greyPixels = new byte[129600];
+        double[] greyPixels = new double[129600];
         int i=0;
-        int value=0;
         // get image size
         int width = src.getWidth();
         int height = src.getHeight();
@@ -132,6 +114,64 @@ byte[] a=new byte[129600];
             for(int y = 0; y < height; ++y) {
                 // get one pixel color
                 pixel = src.getPixel(x, y);
+                // retrieve grey color
+                G = Color.green(pixel);
+                // take conversion up to one single value
+                greyPixels[i]= G;
+                i++;
+            }
+        }
+        // return final image
+        return greyPixels;
+    }
+    public static Bitmap ResizePhoto(Bitmap bMap){
+        // create output bitmap
+        Bitmap bmOut = Bitmap.createBitmap(360, 360, Bitmap.Config.ARGB_8888);
+        // pixel information
+        int A, R, G, B;
+        int pixel;
+
+        // get image size
+        int width = bMap.getWidth();
+        int height = bMap.getHeight();
+
+        // scan through every single pixel
+        for(int x = 140; x < 500; x++) {
+            for(int y = 0; y < height; y++) {
+                // get one pixel color
+                pixel = bMap.getPixel(x, y);
+                A = Color.alpha(pixel);
+                R = Color.red(pixel);
+                G = Color.green(pixel);
+                B = Color.blue(pixel);
+                // retrieve color of all channel
+                // set new pixel color to output bitmap
+                bmOut.setPixel(x-140, y, Color.argb(A,R,G,B));
+            }
+        }
+        return bmOut;
+    }
+    public static Bitmap doGreyscale(Bitmap src) {
+        // constant factors
+        final double GS_RED = 0.299;
+        final double GS_GREEN = 0.587;
+        final double GS_BLUE = 0.114;
+
+        // create output bitmap
+        Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        // pixel information
+        int A, R, G, B;
+        int pixel;
+
+        // get image size
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        // scan through every single pixel
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                // get one pixel color
+                pixel = src.getPixel(x, y);
                 // retrieve color of all channels
                 A = Color.alpha(pixel);
                 R = Color.red(pixel);
@@ -139,12 +179,12 @@ byte[] a=new byte[129600];
                 B = Color.blue(pixel);
                 // take conversion up to one single value
                 R = G = B = (int)(GS_RED * R + GS_GREEN * G + GS_BLUE * B);
-                greyPixels[i]= (byte) G;
-                i++;
+                // set new pixel color to output bitmap
+                bmOut.setPixel(x, y, Color.argb(A,R,G,B));
             }
         }
         // return final image
-        return greyPixels;
+        return bmOut;
     }
 }
 

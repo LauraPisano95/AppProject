@@ -1,13 +1,27 @@
 package com.example.tommy.project;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+import static com.example.tommy.project.PhotoSaver.GreyScaleBitmapToDoubleArray;
+import static com.example.tommy.project.PhotoSaver.ResizePhoto;
+import static com.example.tommy.project.PhotoSaver.doGreyscale;
 
 /**
  * Created by Tommy on 19/06/2017.
@@ -16,34 +30,36 @@ import android.widget.Toast;
 public class TrainingName extends AppCompatActivity {
     Button btt_c;//Confirm
     EditText etName;
-    //Button btt_l;//Load existing training set
-    Button btt_p;//Phone camera
+    Button btt_l;//Load existing training set
+    //Button btt_p;//Phone camera
     String _name;//Data of the subject
     static ImageProcessing imgPr;
-    byte[] photo;
+    double[] photo;
     private static final String TAG = "TrainingName_Activity";
+    final String PATH = Environment.getExternalStorageDirectory()+"/"+"Pictures";
     private static boolean b = false;
-    private static int counter=0;
+    private static int counter = 0;
+    Bitmap[] bMapArray;
+    Bitmap bitmap;
+    ImageView iv;
+    final int N =4;
+    final int M = 129600;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.training_name);
         btt_c = (Button) findViewById(R.id.bttConf);
         etName = (EditText)findViewById(R.id.etName);
-        //btt_l = (Button) findViewById(R.id.bttLoad);
-        btt_p = (Button) findViewById(R.id.bttCell);
+        btt_l = (Button) findViewById(R.id.bttLoad);
+        //btt_p = (Button) findViewById(R.id.bttCell);
         Log.i(TAG, "onCreate: ");
+        iv = (ImageView) this.findViewById(R.id.imageView1);
 
-        if(counter==3){
-            imgPr.GetMeanImage();
-            Log.i(TAG, "GetMeanImage: ");
-            imgPr.GetPhi_i();
-            Log.i(TAG, "GetPhi_i: ");
-            imgPr.GetEigenVectors();
-            Log.i(TAG, "GetEigenVectors: ");
-            imgPr.GetEigenfacesTraining();
-            Log.i(TAG, "GetEigenfacesTraining: ");
-        }
+
+        /*if(counter == 90){
+            GoToRecognitionPhase();
+        }*/
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +76,7 @@ public class TrainingName extends AppCompatActivity {
             }
         });
 
-        btt_p.setOnClickListener(new View.OnClickListener() {
+/*        btt_p.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 _name = etName.getText().toString();
@@ -74,31 +90,87 @@ public class TrainingName extends AppCompatActivity {
                 }
             }
         });
+*/
 
-//        btt_l.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                costruire la classe ImageProcessing con training set e lanciare i metodi
-//
-//            }
-//        });
-
+        btt_l.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                File file = new File(PATH);
+                String[] fileNames = listAllFiles(PATH);
+                bMapArray = new Bitmap[fileNames.length];
+                for ( int i= 0; i< fileNames.length;i++){
+                    bMapArray[i] = BitmapFactory.decodeFile(file+"/"+fileNames[i]);
+                    bitmap = ResizePhoto(doGreyscale(bMapArray[i]));
+                    imgPr.AddPhoto(GreyScaleBitmapToDoubleArray(bitmap));
+                }
+                //iv.setImageBitmap(ResizePhoto(doGreyscale(bMap[0])));
+                Toast.makeText(getApplicationContext(), "Training set caricato!!", Toast.LENGTH_SHORT).show();
+                GoToRecognitionPhase();
+            }
+        });
     }
+
     @Override
     protected void onResume(){
         super.onResume();
         if(b) {
-            Log.i(TAG, "onResume: ");
+            /*Log.i(TAG, "onResume: ");
             Intent myIntent = getIntent();
-            photo = myIntent.getByteArrayExtra("photo");
+            photo = myIntent.getDoubleArrayExtra("photo");
             if(photo != null){
                 imgPr.AddPhoto(photo);
                 counter++;
-            }
+            }*/
         }
         else{
             b = true;
             imgPr = new ImageProcessing();
+        }
+    }
+    private String[] listAllFiles(String pathName){
+        File file = new File(pathName);
+        int i=0;
+        File[] files = file.listFiles();
+        String[] fileNames = new String[files.length];
+        if(files != null){
+            for(File f : files){ // loop and print all file
+                fileNames[i] = f.getName(); // this is file name
+                i++;
+            }
+        }
+        return fileNames;
+    }
+    private void GoToRecognitionPhase(){
+        /*Intent recIntent = new Intent(getApplicationContext(), RecognitionActivity.class);
+        recIntent.putExtra("meanImage", imgPr.getMeanImage());
+        recIntent.putExtra("ohmegak", imgPr.getEigenfaces());
+        startActivity(recIntent);*/
+        //imgPr.ComputeFeature();
+        writeToFile(getApplicationContext(), imgPr.doubleArrayImages);
+    }
+    private void writeToFile(Context context, double[][] data) {
+        try {
+            final File path =
+                    Environment.getExternalStoragePublicDirectory
+                            (
+                                    //Environment.DIRECTORY_PICTURES
+                                    Environment.DIRECTORY_DCIM + "/Txt/"
+                            );
+            final File file = new File(path, "config.txt");
+            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
+            for(int i=0;i<N;i++){
+                for (int j=0;j<M;j++){
+                    outputStreamWriter.write(data[i][j]+"");
+                }
+            }
+            outputStreamWriter.close();
+            fOut.flush();
+            fOut.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
         }
     }
 }
