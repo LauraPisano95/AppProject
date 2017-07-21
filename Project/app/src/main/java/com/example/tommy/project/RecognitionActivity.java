@@ -41,7 +41,7 @@ public class RecognitionActivity extends AppCompatActivity {
     double[] doubleArrayPhoto = new double[129600];
     double[] recPhoto = new double[129600];
     double[][] ohmegak;
-
+    double[][] eigenvectors;
     double[] meanImage;
     private byte[][] array= null;
 
@@ -112,14 +112,6 @@ public class RecognitionActivity extends AppCompatActivity {
         });
     }
 
-    /*private void capturePhoto(View v) {
-        try {
-            new PhotoSaver(context, mVideoView.getMediaPlayer(),null, new ImageProcessing()).record();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
-        }
-    }*/
-
     private double[] GetPhoto(){
         MediaPlayer mMediaPlayer = mVideoView.getMediaPlayer();
         Bitmap colorPhoto =  mMediaPlayer.getCurrentFrame();
@@ -134,93 +126,15 @@ public class RecognitionActivity extends AppCompatActivity {
             //prov[i] = recPhoto[i] - meanImage[i] ;
         }
         double[] omegakDouble = new double[24];
-       /* DoubleMatrix1D prov1 = new DoubleMatrix1D() {
-            @Override
-            public double getQuick(int i) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix1D like(int i) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix2D like2D(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix1D viewSelectionLike(int[] ints) {
-                return null;
-            }
-        };
-        DoubleMatrix1D coeff = new DoubleMatrix1D() {
-            @Override
-            public double getQuick(int i) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix1D like(int i) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix2D like2D(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix1D viewSelectionLike(int[] ints) {
-                return null;
-            }
-        };
-        DoubleMatrix1D eigenVectorRow = new DoubleMatrix1D() {
-            @Override
-            public double getQuick(int i) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix1D like(int i) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix2D like2D(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix1D viewSelectionLike(int[] ints) {
-                return null;
-            }
-        };
-
-        Algebra result = new Algebra();
+       /*
         for (int k = 0; k < 24; k++) {
             prov1.assign(prov[k]);
             //adesso combinazione lineare tra autovettori e prov
            // coeff.set(k, result.mult(eigenVectorRow=eigenVectors.viewRow(k), prov1));//controllare se eigenvector e prov sono giuste in modo che il risultato sia 1x1, fatti passare eigenvectors
         }
         omegakDouble = coeff.toArray();//omega immagine nuova da riconoscere
-    */}
+    */
+    }
 
     /*private double EuclideanDistance(double[] ohmega, double[][] ohmegak){
         double[] diff = new double[129600];
@@ -249,10 +163,10 @@ public class RecognitionActivity extends AppCompatActivity {
         }
         return min;
     }*/
-    private String readFromFile(Context context) {
+    private static String readFromFile(Context context,double[][] matrix) {
         String ret = "";
         try {
-            InputStream inputStream = context.openFileInput("eigenvectors.txt");
+            InputStream inputStream = context.openFileInput("config2.txt");
             if (inputStream != null) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -264,6 +178,15 @@ public class RecognitionActivity extends AppCompatActivity {
                 }
                 inputStream.close();
                 ret = stringBuilder.toString();
+                String[] s = ret.split(" ");
+                matrix = new double[4][129600];
+                int r =0;
+                for(int i=0; i< 4;i++){
+                    for(int j=0;j<129600;j++){
+                        matrix[i][j] = Double.parseDouble(s[r]);
+                        r++;
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
             Log.e("login activity", "File not found: " + e.toString());

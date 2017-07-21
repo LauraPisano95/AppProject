@@ -37,6 +37,7 @@ public class TrainingName extends AppCompatActivity {
     double[] photo;
     private static final String TAG = "TrainingName_Activity";
     final String PATH = Environment.getExternalStorageDirectory()+"/"+"Pictures";
+    final String TXTPATH = Environment.getExternalStorageDirectory()+"/"+"Download";
     private static boolean b = false;
     private static int counter = 0;
     Bitmap[] bMapArray;
@@ -55,11 +56,6 @@ public class TrainingName extends AppCompatActivity {
         //btt_p = (Button) findViewById(R.id.bttCell);
         Log.i(TAG, "onCreate: ");
         iv = (ImageView) this.findViewById(R.id.imageView1);
-
-
-        /*if(counter == 90){
-            GoToRecognitionPhase();
-        }*/
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,8 +100,8 @@ public class TrainingName extends AppCompatActivity {
                     imgPr.AddPhoto(GreyScaleBitmapToDoubleArray(bitmap));
                 }
                 //iv.setImageBitmap(ResizePhoto(doGreyscale(bMap[0])));
-                Toast.makeText(getApplicationContext(), "Training set caricato!!", Toast.LENGTH_SHORT).show();
                 GoToRecognitionPhase();
+                Toast.makeText(getApplicationContext(), "Training set caricato!!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -127,7 +123,7 @@ public class TrainingName extends AppCompatActivity {
             imgPr = new ImageProcessing();
         }
     }
-    private String[] listAllFiles(String pathName){
+    private static String[] listAllFiles(String pathName){
         File file = new File(pathName);
         int i=0;
         File[] files = file.listFiles();
@@ -145,24 +141,18 @@ public class TrainingName extends AppCompatActivity {
         recIntent.putExtra("meanImage", imgPr.getMeanImage());
         recIntent.putExtra("ohmegak", imgPr.getEigenfaces());
         startActivity(recIntent);*/
-        //imgPr.ComputeFeature();
-        writeToFile(getApplicationContext(), imgPr.doubleArrayImages);
+        imgPr.ComputeFeature();
+        //writeToFile(getApplicationContext(), imgPr.doubleArrayImages);
     }
     private void writeToFile(Context context, double[][] data) {
         try {
-            final File path =
-                    Environment.getExternalStoragePublicDirectory
-                            (
-                                    //Environment.DIRECTORY_PICTURES
-                                    Environment.DIRECTORY_DCIM + "/Txt/"
-                            );
-            final File file = new File(path, "config.txt");
+            final File file = new File(TXTPATH, "config.txt");
             file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
             for(int i=0;i<N;i++){
                 for (int j=0;j<M;j++){
-                    outputStreamWriter.write(data[i][j]+"");
+                    outputStreamWriter.write(data[i][j]+" ");
                 }
             }
             outputStreamWriter.close();

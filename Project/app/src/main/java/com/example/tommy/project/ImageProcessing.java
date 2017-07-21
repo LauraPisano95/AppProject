@@ -24,9 +24,10 @@ public class ImageProcessing extends Application {
     //private DoubleMatrix1D Ohmega;
     private double[] doubleOhmega;
     double[][] omegakDouble;
-   // DoubleMatrix2D eigenfaces;
+    // DoubleMatrix2D eigenfaces;
     //DoubleMatrix2D eigenVectors;
     Matrix eigenVectors;
+    Matrix eigenVectorsProv;
     double[][] doubleEigenVectors;
     private int index = 0;
 
@@ -56,10 +57,6 @@ public class ImageProcessing extends Application {
             }
             doubleMeanImage[j] /= 24;
         }
-        /*//To byte
-        for (int i=0;i<24;i++){
-            meanImage[i]=(byte) doubleMeanImage[i];
-        }*/
     }
 
     public void GetPhi_i() {
@@ -69,172 +66,57 @@ public class ImageProcessing extends Application {
                 doubleArrayPhi_i[i][j] = doubleArrayImages[i][j] - doubleMeanImage[j];
             }
         }
-        /*//Possible problem of Underflow, if value is < 0, set 0
-        for (int i = 0; i < PHOTONUM; i++) {
-            for (int j = 0; j < PHOTOSIZE; j++) {
-                if (doubleArrayPhi_i[i][j] < 0) {
-                    doubleArrayPhi_i[i][j] = 0;
-                }
-                phi_i[i][j] = (byte) doubleArrayPhi_i[i][j];
-            }
-        }
-        //Conversion to double
-        for (int i = 0; i < PHOTONUM; i++) {
-            for (int j = 0; j < PHOTOSIZE; j++) {
-                 doubleArrayImages[i][j]= (double) arrayImages[i][j];
-            }
-        }*/
     }
 
     public void GetEigenVectors() {
-        Matrix m1= new Matrix(doubleArrayPhi_i, PHOTONUM, PHOTOSIZE);
+        Matrix m1 = new Matrix(doubleArrayPhi_i, PHOTONUM, PHOTOSIZE);
         Matrix m2 = m1.transpose();
-        Matrix p = new Matrix(12,PHOTOSIZE);
-        p = m2.times(m1);
-       /* DoubleMatrix2D matrix1 = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTONUM,PHOTOSIZE);
-        DoubleMatrix2D matrix2 = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTONUM,PHOTOSIZE);
-        DoubleMatrix2D matrix2T = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTOSIZE,PHOTONUM);
-        DoubleMatrix2D prov = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTOSIZE,PHOTOSIZE);
-        Algebra result = new Algebra();*/
-        eigenVectors = new Matrix(PHOTOSIZE,PHOTOSIZE);
-
-        /*matrix1.assign(doubleArrayPhi_i);
-        matrix2.assign(doubleArrayPhi_i);
-        matrix2T = matrix2.viewDice();
-        prov = result.mult(matrix2T, matrix1);*/
+        Matrix p = m1.times(m2);
+        eigenVectorsProv = new Matrix(PHOTONUM,PHOTONUM);
         EigenvalueDecomposition v = new EigenvalueDecomposition(p);
-        eigenVectors = v.getV();
+        eigenVectorsProv = v.getV();
+        eigenVectors = new Matrix(PHOTOSIZE, PHOTONUM);
+        eigenVectors = (m2.times(p)).timesEquals(1.0/PHOTONUM);
         //Conversion to double
-        doubleEigenVectors = new double[PHOTONUM][PHOTOSIZE];
+        doubleEigenVectors = new double[PHOTOSIZE][PHOTONUM];
         doubleEigenVectors = eigenVectors.getArray();
-        /*for(int i=0;i<PHOTONUM;i++) {
-            doubleEigenVectors[i] = eigenVectors..getArray().toArray();
-        }*/
-        //Si possono usare gli autovalori per calcolare quanti autovettori usare
+        double[][] a = {{3,2,1},{0,1,2}};
+        Matrix A = new Matrix(a);
+        Matrix ATA = A.transpose().times(A);
+        EigenvalueDecomposition c = new EigenvalueDecomposition(ATA);
+        Matrix e = c.getV();
+        Matrix ee=A.times(e);
+        c.getD().get(0,0);
     }
 
-    /*public void ComputeEigenFaces() {
-        DoubleMatrix2D prov = new DoubleMatrix2D() {
-            @Override
-            public double getQuick(int i, int i1) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix2D like(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix1D like1D(int i) {
-                return null;
-            }
-
-            @Override
-            protected DoubleMatrix1D like1D(int i, int i1, int i2) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, int i1, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix2D viewSelectionLike(int[] ints, int[] ints1) {
-                return null;
-            }
-        };
-        eigenfaces = new DoubleMatrix2D() {
-            @Override
-            public double getQuick(int i, int i1) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix2D like(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix1D like1D(int i) {
-                return null;
-            }
-
-            @Override
-            protected DoubleMatrix1D like1D(int i, int i1, int i2) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, int i1, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix2D viewSelectionLike(int[] ints, int[] ints1) {
-                return null;
-            }
-        };
-        DoubleMatrix2D eigenVectorsTr = new DoubleMatrix2D() {
-            @Override
-            public double getQuick(int i, int i1) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix2D like(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix1D like1D(int i) {
-                return null;
-            }
-
-            @Override
-            protected DoubleMatrix1D like1D(int i, int i1, int i2) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, int i1, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix2D viewSelectionLike(int[] ints, int[] ints1) {
-                return null;
-            }
-        };
-        Algebra result = new Algebra();
-
-        prov.assign(doubleArrayPhi_i);
-       // eigenVectorsTr.assign(Transposition(eigenVectors));
-        eigenVectorsTr = eigenVectors.viewDice();
-        eigenfaces=result.mult(eigenVectorsTr, prov);
-    }*/
-
-   /* public void GetEigenfacesTraining() {
+    public void GetEigenfacesTraining() {
         omegakDouble = new double[PHOTONUM][PHOTOSIZE];
-        DoubleMatrix2D prov1 = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTONUM, PHOTOSIZE);
-        prov1.assign(doubleArrayPhi_i);
-        DoubleMatrix2D coeff = cern.colt.matrix.DoubleFactory2D.dense.make(PHOTONUM, PHOTOSIZE);
-        Algebra result = new Algebra();
+        Matrix prov1 = new Matrix(doubleArrayPhi_i);
+        Matrix coeff = new Matrix(PHOTONUM,PHOTOSIZE);
+        int[] array = new int[PHOTOSIZE];
+        for(int h=0;h<PHOTOSIZE;h++)
+        {
+            array[h]=h;
+        }
+        for(int i=0;i<100;i++){
+            Matrix a = eigenVectors.getMatrix(array,i,i);
+        }
+
+       /*
         for (int f = 0; f < PHOTONUM; f++) {
             for (int k = 0; k < PHOTOSIZE; k++) {
                 //adesso combinazione lineare tra autovettori e prov
                 coeff.set(f,k, result.mult(eigenVectors.viewColumn(k), prov1.viewRow(f)));//secondo la luisa e la federica, la moltiplicazione 1dx1d traspone automaticamente il secondo vettore
             }
             omegakDouble[f] = coeff.viewRow(f).toArray();
-        }
-    }*/
+        }*/
+    }
 
     public void ComputeFeature(){
         ComputeMeanImage();
         GetPhi_i();
         GetEigenVectors();
-       // GetEigenfacesTraining();
+        //GetEigenfacesTraining();
     }
     //-------------------------------------RECOGNITION
     public void GetPhi(double[] newImage){
@@ -242,100 +124,9 @@ public class ImageProcessing extends Application {
         for (int j = 0; j < PHOTOSIZE; j++) {
             doublePhi[j] = newImage[j] - doubleMeanImage[j];
         }
-        /*//Conversion to byte
-        for (int j = 0; j < PHOTOSIZE; j++) {
-            if (doublePhi[j] < 0) {
-                doublePhi[j] = 0;
-            }
-            phi[j] = (byte) doublePhi[j];
-        }*/
     }
 
     /*public void GetOhmega(){
-        DoubleMatrix2D eigenfacesTr = new DoubleMatrix2D() {
-            @Override
-            public double getQuick(int i, int i1) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix2D like(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix1D like1D(int i) {
-                return null;
-            }
-
-            @Override
-            protected DoubleMatrix1D like1D(int i, int i1, int i2) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, int i1, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix2D viewSelectionLike(int[] ints, int[] ints1) {
-                return null;
-            }
-        };
-        Algebra result = new Algebra();
-        DoubleMatrix1D matrixPhi = new DoubleMatrix1D() {
-            @Override
-            public double getQuick(int i) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix1D like(int i) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix2D like2D(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix1D viewSelectionLike(int[] ints) {
-                return null;
-            }
-        };
-        Ohmega=new DoubleMatrix1D() {
-            @Override
-            public double getQuick(int i) {
-                return 0;
-            }
-
-            @Override
-            public DoubleMatrix1D like(int i) {
-                return null;
-            }
-
-            @Override
-            public DoubleMatrix2D like2D(int i, int i1) {
-                return null;
-            }
-
-            @Override
-            public void setQuick(int i, double v) {
-
-            }
-
-            @Override
-            protected DoubleMatrix1D viewSelectionLike(int[] ints) {
-                return null;
-            }
-        };
         matrixPhi.assign(doublePhi);
         eigenfacesTr = eigenfaces.viewDice();
         Ohmega = result.mult(eigenfacesTr, matrixPhi);//A*A

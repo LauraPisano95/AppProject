@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     Button btt_t;//Training button
-    //Button btt_r;//Recognition button
+    Button btt_r;//Recognition button
     double[][] ohmegak;
     byte[] meanImage;
     @Override
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btt_t = (Button) findViewById(R.id.bttTraining);
-        //btt_r = (Button) findViewById(R.id.bttRecognition);
+        btt_r = (Button) findViewById(R.id.bttRecognition);
 
         //Training activity
         btt_t.setOnClickListener(new View.OnClickListener() {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-/*        //Recognition activity
+     //Recognition activity
         btt_r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,13 +39,5 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i_r);
             }
         });
-*/
     }
-
-   /* protected void onResume() {
-        super.onResume();
-        Intent myIntent = getIntent();
-        double[] a = myIntent.getDoubleArrayExtra("doubleMeanImage");
-        //double[][] b= myIntent;
-    }*/
 }
