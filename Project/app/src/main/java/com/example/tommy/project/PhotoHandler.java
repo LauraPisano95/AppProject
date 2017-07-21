@@ -22,8 +22,7 @@ public class PhotoHandler extends AppCompatActivity {
      private String[] names = new String[24];
      private Context context = null;
 //   private DroneManager droneManager = null;
-     private static final String TAG = "MainActivity";
-     private static int count = 0;
+     private static final String TAG = "PhotoHandler";
      private static int i = 0;
      private VideoView mVideoView;
      private final String PATH = "tcp://192.168.1.1:5555/";
@@ -41,7 +40,7 @@ public class PhotoHandler extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(i!= 5) {
+        if(i!=24) {
             if (!LibsChecker.checkVitamioLibs(this))
                 return;
 
@@ -105,27 +104,24 @@ public class PhotoHandler extends AppCompatActivity {
     }
 
     private void capturePhoto(View v) {
-        count++;
         //Take name from the previous activity
         Intent myIntent = getIntent();
         name = myIntent.getStringExtra("name");
-        for (int j = i; j < i + 4; i++) {
-            names[j] = name;
-        }
-        i += 4;
         try {
             phs = new PhotoSaver(context, mVideoView.getMediaPlayer(), name);
             phs.record();
-            Intent i_6 = new Intent(getApplicationContext(), TrainingName.class);
-            i_6.putExtra("photo",   phs.photo_train);
-            startActivity(i_6);
-            finish();
-            //ImageProcessing app = (ImageProcessing) getApplicationContext();
-            //app.AddPhoto(phs.photo_train);
+            Log.i(TAG,"record");
+            finishActivity();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Picture error!", Toast.LENGTH_SHORT).show();
         }
     }
+    private void finishActivity() {
+         Intent i_7 = new Intent(getApplicationContext(), TrainingName.class);
+         i_7.putExtra("photo", phs.a);
+         startActivity(i_7);
+         finish();
+     }
 }
 

@@ -3,16 +3,14 @@ package com.example.tommy.project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     Button btt_t;//Training button
     Button btt_r;//Recognition button
-
-    //ImageProcessing app = (ImageProcessing) getApplicationContext();//Singleton instance
-
+    double[][] ohmegak;
+    byte[] meanImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,20 +27,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Recognition activity
+     //Recognition activity
         btt_r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Get the bundle
+                Bundle bundle = getIntent().getExtras();
+
+                //prendere le variabili
                 Intent i_r = new Intent(getApplicationContext(), RecognitionActivity.class);
                 startActivity(i_r);
             }
         });
     }
-
-   /* protected void onResume() {
-        super.onResume();
-        Intent myIntent = getIntent();
-        double[] a = myIntent.getDoubleArrayExtra("doubleMeanImage");
-        //double[][] b= myIntent;
-    }*/
 }
