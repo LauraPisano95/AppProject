@@ -55,7 +55,7 @@ public class ImageProcessing extends Application {
             for (int i = 0; i < PHOTONUM; i++) {
                 doubleMeanImage[j]  += (doubleArrayImages[i][j]);
             }
-            doubleMeanImage[j] /= 24;
+            doubleMeanImage[j] /= PHOTONUM;
         }
     }
 
@@ -80,26 +80,22 @@ public class ImageProcessing extends Application {
         //Conversion to double
         doubleEigenVectors = new double[PHOTOSIZE][PHOTONUM];
         doubleEigenVectors = eigenVectors.getArray();
-        double[][] a = {{3,2,1},{0,1,2}};
-        Matrix A = new Matrix(a);
-        Matrix ATA = A.transpose().times(A);
-        EigenvalueDecomposition c = new EigenvalueDecomposition(ATA);
-        Matrix e = c.getV();
-        Matrix ee=A.times(e);
-        c.getD().get(0,0);
     }
 
     public void GetEigenfacesTraining() {
         omegakDouble = new double[PHOTONUM][PHOTOSIZE];
         Matrix prov1 = new Matrix(doubleArrayPhi_i);
-        Matrix coeff = new Matrix(PHOTONUM,PHOTOSIZE);
         int[] array = new int[PHOTOSIZE];
+        Matrix w= new Matrix(1,1);
         for(int h=0;h<PHOTOSIZE;h++)
         {
             array[h]=h;
         }
-        for(int i=0;i<100;i++){
-            Matrix a = eigenVectors.getMatrix(array,i,i);
+        for(int k=0;k<PHOTONUM;k++) {
+            for (int i = 0; i < PHOTONUM; i++) {
+                w = eigenVectors.getMatrix(array, i, i).times(prov1.getMatrix(k, k, array).transpose());
+                omegakDouble[k][i]= w.get(0,0);
+            }
         }
 
        /*
@@ -116,7 +112,7 @@ public class ImageProcessing extends Application {
         ComputeMeanImage();
         GetPhi_i();
         GetEigenVectors();
-        //GetEigenfacesTraining();
+        GetEigenfacesTraining();
     }
     //-------------------------------------RECOGNITION
     public void GetPhi(double[] newImage){
