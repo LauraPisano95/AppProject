@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static com.example.tommy.project.PhotoSaver.GreyScaleBitmapToDoubleArray;
+import static com.example.tommy.project.FileOperations.getOutputMediaFile;
 
 public class CellPhoto extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
@@ -35,6 +35,7 @@ public class CellPhoto extends AppCompatActivity {
     String filename;
     String finalname;
     String name;
+    final String PATH = Environment.getExternalStorageDirectory()+"/"+"Pictures";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,10 @@ public class CellPhoto extends AppCompatActivity {
             Intent i_4 = getIntent();
             name = i_4.getStringExtra("name");
             names[i]=name;
-            filename = name + ".jpeg";
+            filename = "/" + name + ".jpeg";
             context = getApplicationContext();
+            imgname = PATH + filename;
+            train_photo=new double[70];
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(cameraIntent, CAMERA_REQUEST);
         }
@@ -68,13 +71,13 @@ public class CellPhoto extends AppCompatActivity {
     private void PreparePhoto(Bitmap colorPhoto) {
         if(Environment.getExternalStorageState() != null) {
             try {
-                Bitmap resized = Bitmap.createScaledBitmap(colorPhoto, 360, 360, false);
-                train_photo = new double[129600];
-                train_photo = GreyScaleBitmapToDoubleArray(resized);
-                File picture = getOutputMediaFile();
+                File picture = getOutputMediaFile(imgname);
                 FileOutputStream fos = new FileOutputStream(picture);
-                resized.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                colorPhoto.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
+                //File file = new File(PATH);
+                //train_photo = GreyScaleBitmapToDoubleArray(ResizePhoto(doGreyscale(BitmapFactory.decodeFile(file+"/"+filename))));
+                train_photo[i] +=1;
                 i++;
                 Toast.makeText(context, "Picture saved in :" + imgname, Toast.LENGTH_SHORT).show();
                 FinishActivity();
@@ -91,21 +94,13 @@ public class CellPhoto extends AppCompatActivity {
                 Toast.makeText(context, "Internal memory not available", Toast.LENGTH_SHORT).show();
             }
     }
-    private  File getOutputMediaFile(){
-        finalname = "DronePicture_" + filename;
-        //Create a media file name
-        File mediaFile;
-        imgname = Environment.getExternalStorageDirectory()+ "/Pictures/" + finalname;
-        mediaFile = new File(imgname);
-        return mediaFile;
-    }
     private void FinishActivity() {
-        Intent i_5 = new Intent(getApplicationContext(), TrainingName.class);
-        i_5.putExtra("photo", train_photo);
-        startActivity(i_5);
+        //Return the photo
+        Intent i_7 = new Intent(getApplicationContext(), TrainingName.class);
+        i_7.putExtra("photo", train_photo);
+        setResult(RESULT_OK, i_7);
         finish();
     }
-
     @Override
     public void onBackPressed() {
         FinishActivity();

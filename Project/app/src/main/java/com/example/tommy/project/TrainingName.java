@@ -1,6 +1,5 @@
 package com.example.tommy.project;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,17 +10,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 
-import static com.example.tommy.project.PhotoSaver.GreyScaleBitmapToDoubleArray;
-import static com.example.tommy.project.PhotoSaver.ResizePhoto;
-import static com.example.tommy.project.PhotoSaver.doGreyscale;
+import static com.example.tommy.project.FileOperations.listAllFiles;
+import static com.example.tommy.project.ImageProcessing.GreyScaleBitmapToDoubleArray;
+import static com.example.tommy.project.ImageProcessing.ResizePhoto;
+import static com.example.tommy.project.ImageProcessing.doGreyscale;
 
 /**
  * Created by Tommy on 19/06/2017.
@@ -33,18 +29,16 @@ public class TrainingName extends AppCompatActivity {
     Button btt_l;//Load existing training set
     //Button btt_p;//Phone camera
     String _name;//Data of the subject
-    static ImageProcessing imgPr;
+    static ImageProcessing imgPr= new ImageProcessing();;
     double[] photo;
     private static final String TAG = "TrainingName_Activity";
     final String PATH = Environment.getExternalStorageDirectory()+"/"+"Pictures";
-    final String TXTPATH = Environment.getExternalStorageDirectory()+"/"+"Download";
-    private static boolean b = false;
+    final String TXTPATH = Environment.getExternalStorageDirectory()+"/"+"Project"+"/"+"Data";
     private static int counter = 0;
+    private static boolean b = false;
     Bitmap[] bMapArray;
     Bitmap bitmap;
-    ImageView iv;
-    final int N =4;
-    final int M = 129600;
+    //ImageView iv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +49,7 @@ public class TrainingName extends AppCompatActivity {
         btt_l = (Button) findViewById(R.id.bttLoad);
         //btt_p = (Button) findViewById(R.id.bttCell);
         Log.i(TAG, "onCreate: ");
-        iv = (ImageView) this.findViewById(R.id.imageView1);
+        //iv = (ImageView) this.findViewById(R.id.imageView1);
 
         btt_c.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +66,7 @@ public class TrainingName extends AppCompatActivity {
             }
         });
 
-/*        btt_p.setOnClickListener(new View.OnClickListener() {
+/*       btt_p.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 _name = etName.getText().toString();
@@ -82,7 +76,7 @@ public class TrainingName extends AppCompatActivity {
                 else{
                     Intent i_3 = new Intent(getApplicationContext(), CellPhoto.class);
                     i_3.putExtra("name", _name);
-                    startActivity(i_3);
+                    startActivityForResult(i_3,1);
                 }
             }
         });
@@ -99,68 +93,42 @@ public class TrainingName extends AppCompatActivity {
                     bitmap = ResizePhoto(doGreyscale(bMapArray[i]));
                     imgPr.AddPhoto(GreyScaleBitmapToDoubleArray(bitmap));
                 }
-                //iv.setImageBitmap(ResizePhoto(doGreyscale(bMap[0])));
                 GoToRecognitionPhase();
                 Toast.makeText(getApplicationContext(), "Training set caricato!!", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
     @Override
-    protected void onResume(){
-        super.onResume();
-        if(b) {
-            /*Log.i(TAG, "onResume: ");
-            Intent myIntent = getIntent();
-            photo = myIntent.getDoubleArrayExtra("photo");
-            if(photo != null){
-                imgPr.AddPhoto(photo);
-                counter++;
-            }*/
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                Intent myIntent = getIntent();
+                photo = data.getDoubleArrayExtra("photo");
+                if(photo != null) {
+                    imgPr.AddPhoto(photo);
+                    counter++;
+                }
+            }
         }
-        else{
+    }
+
+  /*  @Override
+    protected  void  onResume(){
+        super.onResume();
+        if(!b){
             b = true;
             imgPr = new ImageProcessing();
         }
-    }
-    private static String[] listAllFiles(String pathName){
-        File file = new File(pathName);
-        int i=0;
-        File[] files = file.listFiles();
-        String[] fileNames = new String[files.length];
-        if(files != null){
-            for(File f : files){ // loop and print all file
-                fileNames[i] = f.getName(); // this is file name
-                i++;
-            }
-        }
-        return fileNames;
-    }
+    }*/
+
     private void GoToRecognitionPhase(){
         /*Intent recIntent = new Intent(getApplicationContext(), RecognitionActivity.class);
         recIntent.putExtra("meanImage", imgPr.getMeanImage());
         recIntent.putExtra("ohmegak", imgPr.getEigenfaces());
         startActivity(recIntent);*/
-        imgPr.ComputeFeature();
-        //writeToFile(getApplicationContext(), imgPr.doubleArrayImages);
-    }
-    private void writeToFile(Context context, double[][] data) {
-        try {
-            final File file = new File(TXTPATH, "config.txt");
-            file.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
-            for(int i=0;i<N;i++){
-                for (int j=0;j<M;j++){
-                    outputStreamWriter.write(data[i][j]+" ");
-                }
-            }
-            outputStreamWriter.close();
-            fOut.flush();
-            fOut.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
+        imgPr.ComputeFeatures();
+        //WriteToFile(getApplicationContext(), imgPr.omegakDouble, TXTPATH, 4, 4, "omegak.txt");
+        //WriteToFile(getApplicationContext(), imgPr.doubleEigenVectors, TXTPATH, 129600, 4, "eigenvectors.txt");
     }
 }
