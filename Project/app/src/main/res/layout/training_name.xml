@@ -8,15 +8,28 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\nInserisci il numero di foto da scattare:"/>
+
+        <EditText
+            android:id="@+id/etNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="\nInserisci nome e cognome:"/>
 
         <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/bttConf"
@@ -27,13 +40,33 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="\n\n\nCalcola le features del training set cliccando su COMPUTE FEATURES:"/>
+        <Button
+            android:id="@+id/bttFeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="COMPUTE FEATURES" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\n\n\nPassa alla fase di recognition premendo RECOGNITION:"/>
+        <Button
+            android:id="@+id/bttRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="RECOGNITION" />
+        <!--
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="\n\n\nCarica training set predefinito cliccando su load:"/>
         <Button
             android:id="@+id/bttLoad"
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:text="LOAD" />
-<!--
        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

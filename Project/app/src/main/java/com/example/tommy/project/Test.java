@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import static com.example.tommy.project.ImageProcessing.GreyScaleBitmapToDoubleArray;
 import static com.example.tommy.project.ImageProcessing.ResizePhoto;
@@ -22,12 +23,14 @@ public class Test extends AppCompatActivity {
     final String RECPATH = Environment.getExternalStorageDirectory()+"/"+"Project"+"/"+"Recognition";
     final String TXTPATH = Environment.getExternalStorageDirectory()+"/"+"Project"+"/"+"Data";
     Button b;
-
+    TextView tv;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test);
         b = (Button) findViewById(R.id.bttllll);
+        tv =(TextView) findViewById(R.id.tv);
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,14 +39,15 @@ public class Test extends AppCompatActivity {
                 //double[][] ohmegakDouble = ReadFromFileToMatrix(context, 4, 4, TXTPATH + "omegak.txt");
                 //double[][] eigenVectors = ReadFromFileToMatrix(context, 129600, 4, TXTPATH + "eigenvectors.txt");
                 double[] a = imgPr.GetOhmega(imgPr.doubleEigenVectors);
-                double v = imgPr.EuclideanDistance(a,imgPr.omegakDouble);
+                int v = imgPr.EuclideanDistance(a,imgPr.omegakDouble);
+                tv.setText(String.valueOf(v));
             }
         });
     }
     private double[] GetPhoto(){
         //MediaPlayer mMediaPlayer = mVideoView.getMediaPlayer();
         //Bitmap colorPhoto =  mMediaPlayer.getCurrentFrame();
-        String imgname = RECPATH + "/"+"recognitionphoto.jpeg";
+        String imgname = RECPATH + "/"+"nn.jpeg";
         /*File picture = getOutputMediaFile(imgname);
         FileOutputStream fos = null;
         try {

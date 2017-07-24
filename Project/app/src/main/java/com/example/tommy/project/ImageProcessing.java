@@ -13,40 +13,56 @@ import Jama.Matrix;
 
 public class ImageProcessing extends Application {
     //129600 = 360*360
-    final int PHOTOSIZE = 129600;
-    final int PHOTONUM = 4;
-    public double[][] doubleArrayImages;
-    //private byte[] meanImage = new byte[129600];
+    private final int PHOTOSIZE=129600;
+    private int PHOTONUM;
+    //private final int PEOPLENUM;
+    private double[][] doubleArrayImages;
     private double[] doubleMeanImage;
-    //private byte[][] phi_i = new byte[24][];
     private double[][] doubleArrayPhi_i;
-    public Matrix phi_i;
     Matrix matrixPhi;
     private double[] doublePhi;
     private Matrix Ohmega;
     private double[] doubleOhmega;
     double[][] omegakDouble;
-    Matrix eigenVectors;
-    Matrix eigenVectorsProv;
     double[][] doubleEigenVectors;
     private int index = 0;
 
-    //Properties for meanImage and eigenfaces
+    //Properties
     public double[] getMeanImage(){
         return this.doubleMeanImage;
     }
     public double[][] getEigenfaces(){
         return this.omegakDouble;
     }
+    public void setPhotonum(int PHOTONUM){
+        this.PHOTONUM=PHOTONUM;
+    }
+    public int getIndex(){
+        return this.index;
+    }
+
     //Constructor
     public ImageProcessing(){
-        doubleArrayImages = new double[PHOTONUM ][];
+        doubleArrayImages = new double[PHOTONUM][];
     }
+
+    /*public ImageProcessing(int PHOTONUM, int PEOPLENUM){
+        this.PHOTONUM = PHOTONUM;
+        this.PEOPLENUM = PEOPLENUM;
+        doubleArrayImages = new double[PHOTONUM][];
+    }*/
 
     //------------------------------TRAINING
     public void AddPhoto(double[] picture){
         doubleArrayImages[index] = picture;
         index++;
+    }
+
+    public void ComputeFeatures(){
+        ComputeMeanImage();
+        GetPhi_i();
+        GetEigenVectors();
+        GetEigenfacesTraining();
     }
 
     private void ComputeMeanImage() {
@@ -60,45 +76,56 @@ public class ImageProcessing extends Application {
     }
 
     private void GetPhi_i() {
-        doubleArrayPhi_i = new double[PHOTONUM ][PHOTOSIZE];
+        doubleArrayPhi_i = new double[PHOTONUM][PHOTOSIZE];
         for (int i = 0; i < PHOTONUM; i++) {
             for (int j = 0; j < PHOTOSIZE; j++) {
                 doubleArrayPhi_i[i][j] = doubleArrayImages[i][j] - doubleMeanImage[j];
             }
         }
-        Matrix phi_iprov = new Matrix (doubleArrayPhi_i);
-        phi_i = phi_iprov.transpose();
+        doubleArrayImages = null;
     }
 
     private void GetEigenVectors() {
-        Matrix m2 = phi_i.transpose();
-        Matrix p = m2.times(phi_i).timesEquals(1.0/PHOTONUM);
-        eigenVectorsProv = new Matrix(PHOTONUM,PHOTONUM);
-        EigenvalueDecomposition v = new EigenvalueDecomposition(p);
-        eigenVectorsProv = v.getV();
-        eigenVectors = new Matrix(PHOTOSIZE, PHOTONUM);
-        eigenVectors = (phi_i.times(eigenVectorsProv));
+        Matrix phi_i = new Matrix(doubleArrayPhi_i).transpose();
+        //Matrix p = phi_i.transpose().times(phi_i).timesEquals(1.0/PHOTONUM);
+       // eigenVectorsProv = new Matrix(PHOTONUM,PHOTONUM);
+        EigenvalueDecomposition v = new EigenvalueDecomposition(phi_i.transpose().times(phi_i).timesEquals(1.0/PHOTONUM));
+        //eigenVectorsProv = v.getV();
+        //eigenVectors = new Matrix(PHOTOSIZE, PHOTONUM);
+        //eigenVectors = (phi_i.times(eigenVectorsProv));
         //Conversion to double
-        doubleEigenVectors = new double[PHOTOSIZE][PHOTONUM];
-        doubleEigenVectors = eigenVectors.getArray();
+        //doubleEigenVectors = new double[PHOTOSIZE][PHOTONUM];
+        doubleEigenVectors = phi_i.times(v.getV()).getArray();
+        //Matrix eigenvalues=v.getD();
+        //double[] eigenvaluesArray= new double[4];
+        /*for(int i=PHOTONUM-1; i>=0;i--) {
+            eigenvaluesArray[i]=eigenvalues.get(i,i);
+        }
+        ComputePercentage(eigenvaluesArray);
+        */
     }
 
     private void GetEigenfacesTraining() {
-        omegakDouble = new double[PHOTONUM][PHOTOSIZE];
+        //omegakDouble = new double[PHOTONUM][PHOTOSIZE];
         Matrix prov1 = new Matrix(doubleArrayPhi_i);
-        Matrix prov2 = prov1.times(eigenVectors);
-        omegakDouble = prov2.getArray();
+       // Matrix prov2 = prov1.times(eigenVectors);
+        //Matrix eigenVectors= new Matrix(doubleEigenVectors);
+        omegakDouble = prov1.times(new Matrix(doubleEigenVectors)).getArray();
+        System.gc();
     }
 
-    public void ComputeFeatures(){
-        ComputeMeanImage();
-        GetPhi_i();
-        GetEigenVectors();
-        GetEigenfacesTraining();
-    }
-
-    private void ComputeTreshold(){
-
+    private void ComputePercentage(double[] eigenvalues){
+        double sum=0.0;
+        for(int i=0;i<PHOTONUM;i++){
+            sum+=eigenvalues[i];
+        }
+        double[] percentage = new double[PHOTONUM];
+        percentage[0]=eigenvalues[0]/sum;
+        eigenvalues[1]+=percentage[0];
+        for(int j=1;j<PHOTONUM;j++){
+            percentage[j] = (eigenvalues[j])/sum;
+            eigenvalues[j]+=percentage[j-1];
+        }
     }
 
     //-------------------------------------RECOGNITION
@@ -110,7 +137,7 @@ public class ImageProcessing extends Application {
         return doublePhi;
     }
 
-    public double[] GetOhmega(double[][] d){
+    public double[] GetOhmega(double[][] eigenvectors){
         matrixPhi = new Matrix(PHOTOSIZE,1);
         for(int i=0;i<PHOTOSIZE;i++){
             matrixPhi.set(i,0, doublePhi[i]);
@@ -119,7 +146,7 @@ public class ImageProcessing extends Application {
         Ohmega = new Matrix(1,PHOTONUM);
         for(int k=0; k<PHOTONUM;k++) {
             for (int h = 0; h < PHOTOSIZE; h++) {
-                prov.set(0, h, d[h][k]);
+                prov.set(0, h, eigenvectors[h][k]);
             }
            Ohmega.set(0,k,prov.times(matrixPhi).get(0,0));
         }
@@ -133,7 +160,7 @@ public class ImageProcessing extends Application {
 
 
     public boolean GetError(){
-    double result;
+        double result;
         result = EuclideanDistance(doubleOhmega,omegakDouble);
         if(result < 0.1){
             return true;
@@ -143,8 +170,8 @@ public class ImageProcessing extends Application {
         }
     }
 
-    public double EuclideanDistance(double[] ohmega, double[][] ohmegak){
-        double[] diff = new double[PHOTOSIZE];
+    public int EuclideanDistance(double[] ohmega, double[][] ohmegak){
+        double[] diff = new double[PHOTONUM];
         double[] x = new double[PHOTONUM];
         for(int i=0;i<PHOTONUM;i++){
             for(int j=0; j<PHOTONUM;j++){
@@ -156,19 +183,21 @@ public class ImageProcessing extends Application {
     }
     private double GetModule(double[] diff){
         double res = 0;
-        for (int k = 0; k < PHOTOSIZE; k++){
+        for (int k = 0; k < PHOTONUM; k++){
             res += diff[k]*diff[k];
         }
-        return (Math.sqrt(res));
+        return (Math.sqrt(res));                        //max 3.04427E8 temp
     }
-    private double GetMinimumError(double[] x){
+    private int GetMinimumError(double[] x){
         double min = x[0];
+        int ind = 0;
         for(int i= 1;i<PHOTONUM;i++){
             if(min > x[i]){
                 min=x[i];
+                ind=i;
             }
         }
-        return min;
+        return ind;
     }
 
     //-------------------------------------MODIFY PHOTO

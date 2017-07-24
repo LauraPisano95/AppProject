@@ -24,6 +24,7 @@ import static com.example.tommy.project.FileOperations.getOutputMediaFile;
 import static com.example.tommy.project.ImageProcessing.GreyScaleBitmapToDoubleArray;
 import static com.example.tommy.project.ImageProcessing.ResizePhoto;
 import static com.example.tommy.project.ImageProcessing.doGreyscale;
+import static com.example.tommy.project.TrainingName.imgPr;
 
 /**
  * Created by Tommy on 10/05/2017.
@@ -33,15 +34,12 @@ public class RecognitionActivity extends AppCompatActivity {
     private Context context = null;
     private VideoView mVideoView;
     private final String WIFIPATH = "tcp://192.168.1.1:5555/";
+    private final String TAG = "RecognitionActivity";
+    private final String RECPATH = Environment.getExternalStorageDirectory()+"/"+"Project"+"/"+"Recognition";
     private Button bttCapturePic = null;
-    private static final String TAG = "RecognitionActivity";
-    double[] doubleArrayPhoto = new double[129600];
     double[] recPhoto = new double[129600];
-    double[][] ohmegak;
-    double[][] eigenvectors;
-    double[] meanImage;
-    private byte[][] array= null;
-    final String RECPATH = Environment.getExternalStorageDirectory()+"/"+"Project"+"/"+"Recognition";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +71,8 @@ public class RecognitionActivity extends AppCompatActivity {
                 Log.i(TAG, "setOnClickListener");
                 recPhoto = GetPhoto();
                 double [] phi = new ImageProcessing().GetPhi(recPhoto);
-
+                double[] a = imgPr.GetOhmega(imgPr.doubleEigenVectors);
+                int v = imgPr.EuclideanDistance(a,imgPr.omegakDouble);
             }
         });
     }
@@ -81,7 +80,7 @@ public class RecognitionActivity extends AppCompatActivity {
     private double[] GetPhoto(){
         MediaPlayer mMediaPlayer = mVideoView.getMediaPlayer();
         Bitmap colorPhoto =  mMediaPlayer.getCurrentFrame();
-        String imgname = RECPATH + "/"+"recognitionphoto.jpeg";
+        String imgname = RECPATH + "/"+"nn.jpeg";
         File picture = getOutputMediaFile(imgname);
         FileOutputStream fos = null;
         try {
@@ -95,7 +94,7 @@ public class RecognitionActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        doubleArrayPhoto = GreyScaleBitmapToDoubleArray(ResizePhoto(doGreyscale(BitmapFactory.decodeFile(imgname))));
+        double[] doubleArrayPhoto = GreyScaleBitmapToDoubleArray(ResizePhoto(doGreyscale(BitmapFactory.decodeFile(imgname))));
         return doubleArrayPhoto;
     }
 }
